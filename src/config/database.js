@@ -10,7 +10,8 @@ async function connectDatabase() {
         const mongoURI = process.env.MONGODB_URI;
         
         if (!mongoURI) {
-            throw new Error('MongoDB Atlas URI is not defined in environment variables');
+            logger.warn('MongoDB Atlas URI is not defined in environment variables');
+            return; // Don't exit, just return
         }
 
         const options = {
@@ -19,6 +20,10 @@ async function connectDatabase() {
             maxPoolSize: 10,
             serverSelectionTimeoutMS: 5000,
             socketTimeoutMS: 45000,
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+            retryReads: true,
+            connectTimeoutMS: 10000,
         };
 
         await mongoose.connect(mongoURI, options);
@@ -47,7 +52,7 @@ async function connectDatabase() {
 
     } catch (error) {
         logger.error('Error connecting to MongoDB Atlas:', error);
-        process.exit(1);
+        return;
     }
 }
 

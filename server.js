@@ -10,8 +10,18 @@ async function startServer() {
     logger.info('Starting server...');
     logger.info(`Environment: ${process.env.NODE_ENV}`);
     
-    await connectDatabase();
-    initializeScheduler();
+    try {
+      await connectDatabase();
+    } catch (error) {
+      logger.error('Database connection failed:', error);
+    }
+
+    if (process.env.RAPID_API_KEY && process.env.RAPID_API_HOST) {
+      initializeScheduler();
+    } else {
+      logger.warn('Scheduler not initialized due to missing API credentials');
+    }
+
     const server = app.listen(config.port, () => {
       logger.info(`Server is running on port ${config.port}`);
     });
@@ -32,7 +42,9 @@ async function startServer() {
 
   } catch (error) {
     logger.error('Failed to start server:', error);
-    process.exit(1);
+    if (process.env.NODE_ENV !== 'production') {
+      process.exit(1);
+    }
   }
 }
 
