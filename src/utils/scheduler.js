@@ -5,7 +5,7 @@ const logger = require('./logger');
 
 function initializeScheduler() {
   // Run every 5 minutes
-  cron.schedule('*/1 * * * *', async () => {
+  cron.schedule('*/30 * * * *', async () => {
     try {
       logger.info('Running scheduled bet update');
       await betService.updateBets();
