@@ -14,10 +14,14 @@ async function connectDatabase() {
         }
 
         const options = {
-            // Removing deprecated options
+            retryWrites: true,
+            w: 'majority',
+            maxPoolSize: 10,
+            serverSelectionTimeoutMS: 5000,
+            socketTimeoutMS: 45000,
         };
 
-        await mongoose.connect(mongoURI);
+        await mongoose.connect(mongoURI, options);
         logger.info('Successfully connected to MongoDB Atlas');
 
         // Handle connection events
