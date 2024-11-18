@@ -1,22 +1,22 @@
-// src/app.js
 const express = require('express');
 const cors = require('cors');
 const betRoutes = require('./routes/betRoutes');
 const errorHandler = require('./middleware/errorHandler');
-const scheduler = require('./utils/scheduler');
 
 const app = express();
 
-app.use(cors());
+// Enable CORS for all routes in development
+if (process.env.NODE_ENV === 'development') {
+    app.use(cors());
+} else {
+    // In production, specify allowed origins
+    app.use(cors({
+        origin: process.env.ALLOWED_ORIGINS || '*'
+    }));
+}
+
 app.use(express.json());
-
-// Routes
 app.use('/api/bets', betRoutes);
-
-// Error handling
 app.use(errorHandler);
-
-// Start scheduler
-scheduler.initializeScheduler();
 
 module.exports = app;
