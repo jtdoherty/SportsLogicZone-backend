@@ -7,6 +7,7 @@ class BetService {
   async updateBets() {
     try {
       const data = await rapidApiService.fetchAdvantages();
+      logger.info('Fetched advantages data:', { count: data.advantages?.length || 0 });
       
       if (data.advantages && data.advantages.length > 0) {
         const bets = data.advantages.map(advantage => {
@@ -44,7 +45,9 @@ class BetService {
           };
         });
 
-        await Bet.bulkWrite(
+        logger.info('Attempting to write to MongoDB:', { betCount: bets.length });
+        
+        const result = await Bet.bulkWrite(
           bets.map(bet => ({
             updateOne: {
               filter: { key: bet.key },
@@ -53,8 +56,8 @@ class BetService {
             }
           }))
         );
-
-        logger.info(`Updated ${bets.length} bets`);
+        
+        logger.info('MongoDB bulkWrite result:', result);
         return bets;
       }
       

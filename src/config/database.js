@@ -52,7 +52,7 @@ async function connectDatabase() {
 
     } catch (error) {
         logger.error('Error connecting to MongoDB Atlas:', error);
-        return;
+        throw error;
     }
 }
 
